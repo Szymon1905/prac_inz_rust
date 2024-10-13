@@ -6,7 +6,7 @@ pub fn play(name:String) {
 
 #[derive(Debug)]
 pub struct Solution {
-    cities: Vec<i32>,
+    pub(crate) cities: Vec<i32>,
     path_length: i32,
 }
 

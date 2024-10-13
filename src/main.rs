@@ -5,6 +5,9 @@ use std::io::{self, BufRead, BufReader, Read};
 mod osobnik;
 mod helpers;
 mod conf;
+mod mutations;
+mod genetic;
+
 use conf::Config;
 
 fn read_matrix(filename: &mut String) -> Vec<Vec<i32>> {
@@ -119,6 +122,10 @@ fn main() {
                 }
                 5 => {
                     //todo add code 5
+                }
+                6 => {
+                    println!("Test only");
+                    mutations::invert();
                 }
                 _ => println!("Unknown option!"),
             }
