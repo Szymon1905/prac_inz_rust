@@ -1,0 +1,37 @@
+#include <random>
+#include <iostream>
+using namespace std;
+int main()
+{
+    random_device rd;
+    mt19937 gen(42);
+    uniform_int_distribution<int> distribution(0, 10);
+
+    for (int i = 0; i < 5; ++i) {
+        cout << distribution(gen) << std::endl;
+    }
+}
+
+4
+8
+10
+2
+8
+
+
+pub fn test3() {
+    use rand::distributions::{Distribution, Uniform};
+    use rand_mt::Mt19937GenRand32;
+    // Set the seed for the RNG
+    let seed: u32 = 42; // Change this to any seed you want
+    let mut rng = Mt19937GenRand32::new(seed);
+
+    // Define the range for uniform distribution
+    let range = Uniform::from(1..=10); // Generates numbers between 1 and 10
+
+    // Generate random numbers
+    for _ in 0..5 {
+        let random_number = range.sample(&mut rng);
+        println!("{}", random_number);
+    }
+}

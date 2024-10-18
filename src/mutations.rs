@@ -1,123 +1,58 @@
-/*
-use rand::Rng;
-use mersenne_twister::MT19937; // Import the MT19937 struct
-use rand::SeedableRng; // Import the SeedableRng trait
-use rand_mt::Mt64;
-extern crate mersenne_twister;
-extern crate rand;
+use std::alloc::dealloc;
+use std::mem::swap;
 use crate::conf::Config;
-use crate::osobnik::Solution;
-
-// config: Config,solution: Solution
-
-*/
 use rand::Rng;
 use rand_mt::Mt19937GenRand32;
+use rand::distributions::{Distribution, Uniform};
+use crate::osobnik::Solution;
 
-pub fn invert() {
-    // Initialize the Mersenne Twister with seed 1
-    let mut rng = Mt19937GenRand32::new(1);
+const seed: u32 = 42; // todo change so reads from config
 
-    // Generate and print 10 uniformly distributed random numbers in a given range
-    let range = 1..=10; // Change this range as needed
+pub fn invert(solution: &mut Solution, config: Config) {
 
-    for _ in 0..10 {
-        let random_number: u32 = rng.gen_range(range.clone());
-        println!("{}", random_number);
-    }
-    println!("---------");
+    let range = Uniform::from(0..=solution.cities.len()-1);
 
-    for _ in 0..10 {
-        let random_number = 1 + rng.gen::<u32>() % 10;
-        println!("{}", random_number);
+    let mut punkt1 = range.sample(&mut config.rng);
+    let mut punkt2 = range.sample(&mut config.rng);
+
+    if (punkt1 > punkt2) {
+        (punkt1, punkt2) = (punkt2, punkt1);
     }
 
 
+    let mut range_to_invert = &solution.cities[punkt1..punkt2 + 1];
+    range_to_invert.reverse();
+
 }
 
-//działą
-pub fn invert2() {
-    // Initialize the Mersenne Twister with seed 1
-    let mut rng = Mt19937GenRand32::new(1);
 
-    // Generate and print 10 random numbers
-    for _ in 0..10 {
-        let random_number: u32 = rng.gen();
-        println!("{}", random_number);
+fn invertion_method(config: &mut Config){
+    let population_size = config.population.len();
+    let mutation_count: i32 = (config.mutation_rate * population_size as f32) as i32; //todo is it safe ?
+
+
+    // todo zoptymalziowac aby range nyl init tylko raz
+    let range = Uniform::from(0..=population_size-1); // todo czeck czy = zostawić w c++ mozę inaczej od właćżnie do bez
+    for _ in 0..mutation_count {
+        let mut random = range.sample(&mut config.rng);
+        invert(&mut config.population[random], config);
     }
+
 }
 
+fn swapping_method(population: &Vec<Solution>){
+    let range = Uniform::from(0..=population.len()-1);
+    let mut rng = Uniform::from(seed);
+    let mut punkt1 = range.sample(&mut rng);
+    let mut punkt2 = range.sample(&mut rng);
+    (population[punkt1], population[punkt2]) = (population[punkt2], population[punkt1]);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-pub fn invert() {
-    use rand_mt::Mt64; // Import the Mersenne Twister RNG
-
-    let mut mt = Mt64::new(1);
-    for _ in 0..10 { // Generate 10 random numbers
-        // Generate a random u64 number between 1 and 10
-        let random_number: u64 = mt.next_u64() % 10 + 1;
-        println!("{} ", random_number); // Print the generated number
+fn mutation(config: Config){
+    if (config.mutation_method == 0) {
+        invertion_method(&config);
     }
-}
-
-
-
-pub fn example_usage() {
-    // Create a seed as a slice of u32
-    let seed: [u32; 4] = [1, 2, 3, 4]; // Example seed array
-
-    // Create a new MT19937 instance from the seed
-    let mut rng = MT19937::new_unseeded(); // Seed the RNG using the array reference
-
-    // Generate some random numbers
-    for _ in 0..5 {
-        let random_number: u32 = rng.gen(); // Generate a random number
-        println!("Random Number: {}", random_number); // Print the generated number
+    if (config.mutation_method == 1) {
+        swapping_method(&config);
     }
-}
-
-*/
-
-
-
-
-
-fn invertion_method(){
-
-}
-
-fn swapping_method(){
-
-}
-
-fn mutation(){
-
 }

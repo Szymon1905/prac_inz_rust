@@ -1,14 +1,17 @@
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Read};
-
+use rand_mt::Mt19937GenRand32;
+use rand::distributions::{Distribution, Uniform};
 
 mod osobnik;
 mod helpers;
 mod conf;
 mod mutations;
 mod genetic;
+mod tests;
 
 use conf::Config;
+use crate::osobnik::Solution;
 
 fn read_matrix(filename: &mut String) -> Vec<Vec<i32>> {
 
@@ -89,12 +92,13 @@ fn main() {
     let mut filename = String::new();
     let mut config = Config::new();
 
+
     println!("Options:  [] <- current param value");
     println!("0 - read matrix");
-    println!("1 - stop criteria");
-    println!("2 - starting population size");
-    println!("3 - mutation rate");
-    println!("4 - mutation method");
+    println!("1 - set stop criteria");
+    println!("2 - set starting population size");
+    println!("3 - set mutation rate");
+    println!("4 - set mutation method");
     println!("5 - start genetic algorithm");
 
     loop {
@@ -125,7 +129,7 @@ fn main() {
                 }
                 6 => {
                     println!("Test only");
-                    mutations::invert();
+                    tests::test3();
                 }
                 _ => println!("Unknown option!"),
             }
