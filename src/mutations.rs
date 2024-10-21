@@ -48,11 +48,11 @@ fn swapping_method(population: &Vec<Solution>){
     (population[punkt1], population[punkt2]) = (population[punkt2], population[punkt1]);
 }
 
-fn mutation(config: Config){
+fn mutation(mut config: Config){
     if (config.mutation_method == 0) {
-        invertion_method(&config);
+        invertion_method(&mut config);
     }
     if (config.mutation_method == 1) {
-        swapping_method(&config);
+        swapping_method(&config.population);
     }
 }
