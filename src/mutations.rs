@@ -8,12 +8,12 @@ use crate::osobnik::Solution;
 
 const seed: u32 = 42; // todo change so reads from config
 
-pub fn invert(solution: &mut Solution, config: Config) {
+pub fn invert(solution: &mut Solution, rng: &mut Mt19937GenRand32) {
 
     let range = Uniform::from(0..=solution.cities.len()-1);
 
-    let mut punkt1 = range.sample(&mut config.rng);
-    let mut punkt2 = range.sample(&mut config.rng);
+    let mut punkt1 = range.sample(rng);
+    let mut punkt2 = range.sample(rng);
 
     if (punkt1 > punkt2) {
         (punkt1, punkt2) = (punkt2, punkt1);
@@ -35,7 +35,7 @@ fn invertion_method(config: &mut Config){
     let range = Uniform::from(0..=population_size-1); // todo czeck czy = zostawić w c++ mozę inaczej od właćżnie do bez
     for _ in 0..mutation_count {
         let mut random = range.sample(&mut config.rng);
-        invert(&mut config.population[random], config);
+        invert(&mut config.population[random], &mut config.rng);
     }
 
 }
