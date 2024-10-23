@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, Read};
+use std::io::{self, BufRead, BufReader, Read, Write};
 use rand_mt::Mt19937GenRand32;
 use rand::distributions::{Distribution, Uniform};
 
@@ -13,17 +13,17 @@ mod tests;
 use conf::Config;
 use crate::osobnik::Solution;
 
-fn read_matrix(filename: &mut String) -> Vec<Vec<i32>> {
+fn read_matrix() -> Vec<Vec<i32>> {
 
     println!("Enter the file name: ");
     let mut input: String = String::new();
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line!");
-    *filename = input;
-
+    let filename = input.trim();
+    println!("file: {}",filename);
     let mut matrix: Vec<Vec<i32>> = Vec::new();
-    let file = File::open("src/tsp_5.txt").expect("File not found!");
+    let file = File::open(filename).expect("File not found!");
     let mut city_count:i32 = 0;
 
     let reader = BufReader::new(file);
@@ -87,12 +87,11 @@ unsafe fn set_mutation_rate(config: &mut Config) {
 
 
 fn main() {
-   println!("Author: Szymon Borzdyński");
     let mut option:i32;
     let mut filename = String::new();
     let mut config = Config::new();
 
-
+    println!("Author: Szymon Borzdyński");
     println!("Options:  [] <- current param value");
     println!("0 - read matrix");
     println!("1 - set stop criteria");
@@ -100,13 +99,14 @@ fn main() {
     println!("3 - set mutation rate");
     println!("4 - set mutation method");
     println!("5 - start genetic algorithm");
-
+    println!("6 - test");
+    io::stdout().flush().unwrap();
     loop {
         option = helpers::read_integer();
         unsafe {
             match option {
                 0 => {
-                    config.matrix = read_matrix(&mut filename);
+                    config.matrix = read_matrix();
                     println!("{:?}", config.matrix);
                 }
                 1 => {
@@ -129,7 +129,7 @@ fn main() {
                 }
                 6 => {
                     println!("Test only");
-                    tests::test3();
+                    tests::test1();
                 }
                 _ => println!("Unknown option!"),
             }
