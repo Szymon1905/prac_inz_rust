@@ -42,6 +42,12 @@ impl Config {
             rng: Mt19937GenRand32::new(seed),
         }
     }
+
+    pub fn print_best(&self) {
+        println!("Best solution: ");
+        println!("{:?}", self.best_solution);
+        println!("Solution length: {}", self.best_solution.path_length);
+    }
 }
 
 

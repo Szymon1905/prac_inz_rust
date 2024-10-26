@@ -1,7 +1,7 @@
-use std::alloc::dealloc;
-use std::mem::swap;
+
+
 use crate::conf::Config;
-use rand::Rng;
+
 use rand_mt::Mt19937GenRand32;
 use rand::distributions::{Distribution, Uniform};
 use crate::osobnik::Solution;

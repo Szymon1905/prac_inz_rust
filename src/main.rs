@@ -13,7 +13,7 @@ mod tests;
 use conf::Config;
 use crate::osobnik::Solution;
 
-fn read_matrix() -> Vec<Vec<i32>> {
+fn read_matrix(config: &mut Config) -> Vec<Vec<i32>> {
 
     println!("Enter the file name: ");
     let mut input: String = String::new();
@@ -33,6 +33,8 @@ fn read_matrix() -> Vec<Vec<i32>> {
         city_count = line.trim().parse().expect("Not a number!");
         println!("City count: {}", city_count);
     }
+    config.city_count = city_count;
+
 
     for _i in 0..city_count {
         if let Some(Ok(line)) = lines.next() {
@@ -106,7 +108,7 @@ fn main() {
         unsafe {
             match option {
                 0 => {
-                    config.matrix = read_matrix();
+                    config.matrix = read_matrix(&mut config);
                     println!("{:?}", config.matrix);
                 }
                 1 => {
@@ -125,7 +127,7 @@ fn main() {
                     //todo add code 4
                 }
                 5 => {
-                    //todo add code 5
+                    genetic::genetic(&mut config);
                 }
                 6 => {
                     println!("Test only");
