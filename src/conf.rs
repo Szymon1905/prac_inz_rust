@@ -8,7 +8,7 @@ use crate::osobnik::Solution;
 pub struct Config {
     pub city_count: i32,
     pub matrix: Vec<Vec<i32>>,
-    pub stop_time: i32,
+    pub stop_time: u64,
     pub starting_population_size: i32,
     pub mutation_rate: f32,
     pub crossover_factor: f32,
@@ -29,7 +29,7 @@ impl Config {
         Config {
             city_count: 0,
             matrix: Vec::new(),
-            stop_time: 10,
+            stop_time: 15,
             starting_population_size: 500,
             mutation_rate: 0.01,
             crossover_factor: 0.8,

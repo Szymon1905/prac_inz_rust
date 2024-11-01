@@ -46,7 +46,7 @@ fn swapping_method(config: &mut Config) {
     population.swap(punkt1, punkt2);
 }
 
-fn mutation(mut config: Config) {
+pub(crate) fn mutation(mut config: &mut Config) {
     if (config.mutation_method == 0) {
         invertion_method(&mut config);
     }

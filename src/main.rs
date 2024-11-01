@@ -58,7 +58,7 @@ unsafe fn set_stop_time(config: &mut Config) {
         .expect("Failed to read line!");
 
     // Parse the input string to an i32
-    let temp = input.trim().parse::<i32>().expect("Please enter a valid integer");
+    let temp = input.trim().parse::<u64>().expect("Please enter a valid integer");
     config.stop_time = temp;
 }
 
