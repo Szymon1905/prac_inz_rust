@@ -1,8 +1,13 @@
 #![allow(unused_parens)]
 #![allow(unused_mut)]
-use rand_mt::Mt19937GenRand32; // Assuming you're using this RNG
 use rand_core::SeedableRng;
-
+use rand::distributions::{Distribution, Uniform};
+use rand_mt::Mt19937GenRand32;
+use rand::seq::SliceRandom;
+use shuffle::shuffler::Shuffler;
+use shuffle::irs::Irs;
+use rand::rngs::mock::StepRng;
+#[test]
 pub fn test1() {
     // Define seed
     let seed: u32 = 12345;
@@ -16,15 +21,16 @@ pub fn test1() {
     }
 }
 
-pub fn test3() { // działą jak w c++
+
+pub fn test11() { // działą jak w c++
     use rand::distributions::{Distribution, Uniform};
     use rand_mt::Mt19937GenRand32;
-    let seed: u32 = 42;
+    let seed: u32 = 12345;
     let mut rng = Mt19937GenRand32::new(seed);
 
     let range = Uniform::from(1..=10);
 
-    for _ in 0..5 {
+    for _ in 0..20 {
         let random_number = range.sample(&mut rng);
         println!("{}", random_number);
     }
@@ -34,6 +40,7 @@ pub fn test3() { // działą jak w c++
 
 
 use std::process;
+use rand::Rng;
 
 const N: usize = 624;
 const M: usize = 397;
@@ -94,13 +101,82 @@ impl MersenneTwister {
     }
 }
 
-pub fn test2() {
-    let pid = process::id() as u32;
-    let mut rng = MersenneTwister::new(12345);
-    for i in 0..20 {
-        match rng.extract_number() {
-            Ok(num) => println!("PRNG {} = {}", i+1, num),
-            Err(e) => eprintln!("Error:{}", e),
-        }
+#[test]
+pub fn test_shuffle() {
+    use rand_mt::Mt19937GenRand32;
+    let seed: u32 = 2;
+    let mut rng = Mt19937GenRand32::new(seed);
+    let mut vector: Vec<i32> = Vec::from([1,2,3,4,5,6]);
+    let rng_gen = &mut rng;
+    vector.shuffle(rng_gen);
+    println!("{:?}", vector);
+}
+
+
+#[test]
+pub fn test4() {
+    use rand::distributions::{Distribution, Uniform};
+    use rand_mt::Mt19937GenRand32;
+    // Set the seed for the RNG
+    let seed: u32 = 42; // Change this to any seed you want
+    let mut rng = Mt19937GenRand32::new(seed);
+
+    // Define the range for uniform distribution
+    let range = Uniform::from(0..=10); // Generates numbers between 1 and 10
+
+    // Generate random numbers
+    for _ in 0..20 {
+        let random_number = range.sample(&mut rng);
+        print!("{} ", random_number);
     }
 }
+
+#[test]
+pub fn test5() { //działa
+    let seed: u32 = 2;
+    let mut rng = Mt19937GenRand32::new(seed);
+    let mut vec = vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+    println!("Before shuffle: {:?}", vec);
+
+    let len = vec.len();
+    for i in (1..len).rev() {
+        println!("przed range i = {:?}", i);
+        let range = Uniform::from(0..=(i as i32));
+        let j = range.sample(&mut rng);
+        println!("po range j = {:?}", j);
+        vec.swap(i, j as usize);               // Swap elements at indices i and j
+    }
+    println!("After shuffle: {:?}", vec);
+}
+pub fn test6() {
+    let seed: u32 = 2;
+    let mut rng = Mt19937GenRand32::new(seed);
+    let mut vec = vec![1, 2, 3, 4, 5, 6];
+    println!("Before shuffle: {:?}", vec);
+
+    let len = vec.len();
+    for i in (1..len).rev() {
+        println!("przed range i = {:?}", i);
+        let range = Uniform::from(0..=i);
+        let j = range.sample(&mut rng);
+        println!("po range j = {:?}", j);
+        vec.swap(i, j);               // Swap elements at indices i and j
+    }
+    println!("After shuffle: {:?}", vec);
+}
+#[test]
+pub fn test77() {
+    let seed: u32 = 2; // Change this to any seed you want
+    let mut rng = Mt19937GenRand32::new(seed);
+    let mut range = Uniform::from(0..=6);
+    let j = range.sample(&mut rng);
+    println!("{}", j);
+    range = Uniform::from(0..=5);
+    let j = range.sample(&mut rng);
+    println!("{}", j);
+    range = Uniform::from(0..=4);
+    let j = range.sample(&mut rng);
+    println!("{}", j);
+}
+
+

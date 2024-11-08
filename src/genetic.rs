@@ -1,6 +1,4 @@
 use std::mem;
-use std::process::exit;
-use rand_mt::Mt19937GenRand32;
 use rand::distributions::{Distribution, Uniform};
 use rand::Rng;
 use std::time::{Instant, Duration};
@@ -8,13 +6,22 @@ use rand::seq::SliceRandom;
 use crate::conf::Config;
 use crate::osobnik::Solution;
 use crate::mutations::mutation;
-
+use rand_mt::Mt19937GenRand32;
 fn print_best(config: Config){
     println!("best solution {:?}", config.best_solution.cities);
 }
 
 fn timer(){
+// todo add timer
+}
 
+pub fn shuffle(vec: &mut Vec<i32>, rng: &mut Mt19937GenRand32) {
+    let len = vec.len();
+    for i in (1..len).rev() {
+        let range = Uniform::from(0..=i as i32);  // Ensure `i` is casted correctly to `i32`
+        let j = range.sample(rng);
+        vec.swap(i, j as usize);  // `j` is cast back to `usize` to match the index type
+    }
 }
 
 fn generate_starting_population(config: &mut Config){
@@ -33,8 +40,8 @@ fn generate_starting_population(config: &mut Config){
     let starting_population_size = config.starting_population_size;
     // generating random permutations of cities by the shuffle method and inserting them into the starting population
     for i in (0..starting_population_size) {
-        cities.shuffle(rng); // todo check if same as in c++
-
+        //cities.shuffle(rng); // todo check if same as in c++
+        shuffle(&mut cities, rng);
         let solution = Solution::new(cities.clone(), i32::MAX);
         config.population.push(solution);
     }
@@ -86,9 +93,9 @@ fn custom_parent_choosing_method(){
 
 fn choosing_parent_book_method(population: &[Solution], rng : &mut Mt19937GenRand32) -> Vec<Solution> {
     // Calculate the sum of the inverse path lengths
-    let path_sum: f64 = population
+    let path_sum: f32 = population
         .iter()
-        .map(|solution| 1.0 / solution.path_length as f64)
+        .map(|solution| 1.0 / solution.path_length as f32)
         .sum();
 
     // Initialize an empty list for selected parents
@@ -104,7 +111,7 @@ fn choosing_parent_book_method(population: &[Solution], rng : &mut Mt19937GenRan
         let los = distribution.sample(rng);
 
         for solution in population.iter() {
-            sum += 1.0 / solution.path_length as f64;
+            sum += 1.0 / solution.path_length as f32;
             if sum >= los {
                 chosen_ones.push(solution.clone());
                 break;
@@ -200,7 +207,7 @@ fn crossover(mut config: &mut Config){
     let mut succesor1 : Solution;
     let mut succesor2 : Solution;
     let upper_range = config.population.len() - 1;
-    let mut range = Uniform::from(0..=upper_range);
+    let mut range = Uniform::from(0..=upper_range as i32);
     let crossover_chance = Uniform::from(0.0..=1.0);
     let rng = &mut config.rng;
 
@@ -216,14 +223,14 @@ fn crossover(mut config: &mut Config){
             let rodzic1 = range.sample(rng);
             let rodzic2 = range.sample(rng);
 
-            let parent1 = &population_temp[rodzic1];
-            let parent2 = &population_temp[rodzic2];
+            let parent1 = &population_temp[rodzic1 as usize];
+            let parent2 = &population_temp[rodzic2 as usize];
 
             succesor1 = ox_crossover(parent1, parent2, rng);
             new_ones.push(succesor1);
         } else {
             let sol = solution.clone();
-            new_ones.push(sol);  // Assuming Solution implements Clone
+            new_ones.push(sol);
         }
     }
 
@@ -235,8 +242,8 @@ fn crossover(mut config: &mut Config){
             let rodzic1 = range.sample(rng);
             let rodzic2 = range.sample(rng);
 
-            let parent1 = &population_temp[rodzic2];
-            let parent2 = &population_temp[rodzic1];
+            let parent1 = &population_temp[rodzic2 as usize];
+            let parent2 = &population_temp[rodzic1 as usize];
 
             succesor2 = ox_crossover(parent1, parent2, rng);
             new_ones.push(succesor2);
@@ -258,10 +265,6 @@ pub(crate) fn genetic(config: &mut Config){
 
     let start = Instant::now();
     let end = start + duration;
-
-
-
-
 
 
     while Instant::now() < end {

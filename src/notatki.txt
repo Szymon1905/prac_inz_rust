@@ -27,7 +27,7 @@ pub fn test3() {
     let mut rng = Mt19937GenRand32::new(seed);
 
     // Define the range for uniform distribution
-    let range = Uniform::from(1..=10); // Generates numbers between 1 and 10
+    let range = Uniform::from(0..=10); // Generates numbers between 1 and 10
 
     // Generate random numbers
     for _ in 0..5 {

@@ -12,6 +12,8 @@ mod tests;
 
 use conf::Config;
 use crate::osobnik::Solution;
+use crate::tests::test6;
+
 
 fn read_matrix(config: &mut Config) -> Vec<Vec<i32>> {
 
@@ -90,7 +92,6 @@ unsafe fn set_mutation_rate(config: &mut Config) {
 
 fn main() {
     let mut option:i32;
-    let mut filename = String::new();
     let mut config = Config::new();
 
     println!("Author: Szymon Borzdyński");
@@ -131,7 +132,7 @@ fn main() {
                 }
                 6 => {
                     println!("Test only");
-                    tests::test1();
+                    test6();
                 }
                 _ => println!("Unknown option!"),
             }

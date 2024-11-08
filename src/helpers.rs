@@ -1,5 +1,6 @@
 use std::{env, io};
-
+use rand_mt::Mt19937GenRand32;
+use rand::distributions::{Distribution, Uniform};
 
 fn get_cwd() -> String {
     env::current_dir().unwrap().to_str().unwrap().to_owned()
@@ -26,3 +27,4 @@ pub fn read_integer() -> i32 {
         }
     }
 }
+
