@@ -95,7 +95,7 @@ fn choosing_parent_book_method(population: &[Solution], rng : &mut Mt19937GenRan
     // Calculate the sum of the inverse path lengths
     let path_sum: f32 = population
         .iter()
-        .map(|solution| 1.0 / solution.path_length as f32)
+        .map(|solution| 1.0f32 / solution.path_length as f32)
         .sum();
 
     // Initialize an empty list for selected parents
@@ -107,11 +107,11 @@ fn choosing_parent_book_method(population: &[Solution], rng : &mut Mt19937GenRan
     //let rng = &mut config.rng;
     // Choosing parents
     for _ in 0..(population.len() / 2) {
-        let mut sum = 0.0;
+        let mut sum = 0.0f32;
         let los = distribution.sample(rng);
 
         for solution in population.iter() {
-            sum += 1.0 / solution.path_length as f32;
+            sum += 1.0f32 / solution.path_length as f32;
             if sum >= los {
                 chosen_ones.push(solution.clone());
                 break;
@@ -135,7 +135,7 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
     let city_count = parent1.cities.len();
     let mut succesor = Solution::new(vec![-1; city_count], i32::MAX);
 
-    let mut random_point = Uniform::from(0..=city_count -2);
+    let mut random_point = Uniform::from(0 as i32 ..=(city_count - 2) as i32);
     let mut point1 = rng.sample(random_point);
     let mut point2 = rng.sample(random_point);
 
@@ -150,12 +150,12 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
 
     // wstawienie miast do potomka od rodzica pomiędzy punktami cięcia,  takie zielone na slajdzie 17
     for i in (point1..=point2) {
-        succesor.cities[i] = parent1.cities[i];
+        succesor.cities[i as usize] = parent1.cities[i as usize];
     }
 
     //wybranie do osobnego vectora miast ktore mogę wziąść z rodzica2 (te miasta co nie zostały pobrane z rodzica 1) z prawej storny
     let mut available_cities: Vec<i32> = Vec::new();
-    for i in (point2 + 1)..city_count {
+    for i in (point2 + 1) as usize..city_count {
         let city = parent2.cities[i];
 
         //wybranie do osobnego vectora miast ktore mogę wziąść z rodzica2 (te miasta co nie zostały pobrane z rodzica 1) z prawej storny
@@ -171,7 +171,7 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
 
     //wybranie do osobnego vectora miast ktore mogę wziąść z rodzica2 z lewej storny
     for i in 0..=point2 {
-        let city = parent2.cities[i];
+        let city = parent2.cities[i as usize];
 
         // Check if the city is not in successor.cities and not in available_cities
         if !succesor.cities.contains(&city) {
@@ -183,7 +183,7 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
     }
 
     // Wypełnienie potomka miastami z rodzica 2 częsci prawej
-    for i in (point2 + 1)..city_count {
+    for i in (point2 + 1) as usize..city_count {
         if succesor.cities[i] == -1 {
             // Assign the first city from available_cities to successor.cities[i] and remove it
             succesor.cities[i] = available_cities[0];
@@ -193,9 +193,9 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
 
     // Wypełnienie potomka miastami z rodzica 2 częsci lewej
     for i in 0..point1 {
-        if succesor.cities[i] == -1 {
+        if succesor.cities[i as usize] == -1 {
             // Assign the first city from available_cities to successor.cities[i] and remove it
-            succesor.cities[i] = available_cities[0];
+            succesor.cities[i as usize] = available_cities[0];
             available_cities.remove(0);
         }
     }
@@ -208,14 +208,14 @@ fn crossover(mut config: &mut Config){
     let mut succesor2 : Solution;
     let upper_range = config.population.len() - 1;
     let mut range = Uniform::from(0..=upper_range as i32);
-    let crossover_chance = Uniform::from(0.0..=1.0);
+    let crossover_chance = Uniform::from(0.0 as f32 ..=1.0 as f32);
     let rng = &mut config.rng;
 
 
     let mut new_ones: Vec<Solution> = Vec::new();
     let mut population_temp = config.population.clone();
 
-
+    //todo tu sie dzieje cos inczaje, shuffle raczej robi ok
     for solution in &population_temp {
         let chance: f32 = rng.sample(crossover_chance);
 
@@ -268,16 +268,31 @@ pub(crate) fn genetic(config: &mut Config){
 
 
     while Instant::now() < end {
+        {
+            let population = &mut config.population;
+            let best_solution = &mut config.best_solution;
+            let matrix = &mut config.matrix;
+            let rng = &mut config.rng;
+
+            evaluate_population(population, matrix, best_solution);
+
+            config.population = choosing_parent_book_method(population, rng);
+        }
+        {
+            let population = &mut config.population;
+            let best_solution = &mut config.best_solution;
+            let matrix = &mut config.matrix;
+            let rng = &mut config.rng;
+            crossover(config);
+        }
+
         let population = &mut config.population;
         let best_solution = &mut config.best_solution;
         let matrix = &mut config.matrix;
         let rng = &mut config.rng;
-
         evaluate_population(population, matrix, best_solution);
 
-        config.population = choosing_parent_book_method(population, rng);
 
-        crossover(config);
 
         mutation(config);
     }

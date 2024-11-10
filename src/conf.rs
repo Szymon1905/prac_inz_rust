@@ -29,8 +29,8 @@ impl Config {
         Config {
             city_count: 0,
             matrix: Vec::new(),
-            stop_time: 15,
-            starting_population_size: 500,
+            stop_time: 1500,
+            starting_population_size: 10,
             mutation_rate: 0.01,
             crossover_factor: 0.8,
             mutation_method: 0,

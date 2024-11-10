@@ -31,7 +31,7 @@ fn invertion_method(config: &mut Config) {
 
 
     // todo zoptymalziowac aby range nyl init tylko raz
-    let range = Uniform::from(0..=((population_size - 1) as i32)); // todo czeck czy = zostawić w c++ mozę inaczej od właćżnie do bez
+    let range = Uniform::from(0 as i32..=((population_size - 1) as i32)); // todo czeck czy = zostawić w c++ mozę inaczej od właćżnie do bez
     let rng = &mut config.rng;
     for _ in 0..mutation_count {
         let mut random = range.sample(rng);
