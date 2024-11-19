@@ -19,6 +19,7 @@ pub struct Config {
     pub population: Vec<Solution>,
     pub best_solution: Solution,
     pub rng :Mt19937GenRand32,
+    pub liczba_operacji:i32,
 }
 impl Config {
     pub fn new() -> Self {
@@ -29,8 +30,8 @@ impl Config {
         Config {
             city_count: 0,
             matrix: Vec::new(),
-            stop_time: 1500,
-            starting_population_size: 10,
+            stop_time: 10,
+            starting_population_size: 500,
             mutation_rate: 0.01,
             crossover_factor: 0.8,
             mutation_method: 0,
@@ -40,6 +41,7 @@ impl Config {
             population: Vec::new(),
             best_solution: Solution::new(Vec::new(),i32::MAX),
             rng: Mt19937GenRand32::new(seed),
+            liczba_operacji: 0,
         }
     }
 

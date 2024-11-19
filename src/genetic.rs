@@ -256,7 +256,7 @@ fn crossover(mut config: &mut Config){
 }
 
 pub(crate) fn genetic(config: &mut Config){
-
+    config.liczba_operacji = 0;
     generate_starting_population(config);
 
     config.best_solution.reset();
@@ -295,11 +295,14 @@ pub(crate) fn genetic(config: &mut Config){
 
 
         mutation(config);
+
+        config.liczba_operacji += 1;
     }
 
 
 
 
     println!("Out of time");
+    println!("Liczba operacji: {}", config.liczba_operacji);
     config.print_best();
 }
