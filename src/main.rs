@@ -3,7 +3,7 @@ use std::io::{self, BufRead, BufReader, Read, Write};
 use rand_mt::Mt19937GenRand32;
 use rand::distributions::{Distribution, Uniform};
 
-mod osobnik;
+mod solution;
 mod helpers;
 mod conf;
 mod mutations;
@@ -11,7 +11,7 @@ mod genetic;
 mod tests;
 
 use conf::Config;
-use crate::osobnik::Solution;
+use crate::solution::Solution;
 use crate::tests::test6;
 
 
@@ -25,14 +25,14 @@ fn read_matrix(config: &mut Config) -> Vec<Vec<i32>> {
     let filename = input.trim();
     println!("file: {}",filename);
     let mut matrix: Vec<Vec<i32>> = Vec::new();
-    let file = File::open(filename).expect("File not found!");
+    let file = File::open(filename).expect("Nie znaleziono pliku");
     let mut city_count:i32 = 0;
 
     let reader = BufReader::new(file);
 
-    let mut lines = reader.lines();
+    let mut lines = reader.lines(); // czytamy linie pliku z danymi
     if let Some(Ok(line)) = lines.next() {
-        city_count = line.trim().parse().expect("Not a number!");
+        city_count = line.trim().parse().expect("Nie prawidłowy format danych (Nie liczba)");
         println!("City count: {}", city_count);
     }
     config.city_count = city_count;
@@ -42,15 +42,16 @@ fn read_matrix(config: &mut Config) -> Vec<Vec<i32>> {
         if let Some(Ok(line)) = lines.next() {
             let values: Vec<i32> = line
                 .split_whitespace()
-                .map(|s| s.parse().expect("Invalid matrix value"))
+                .map(|s| s.parse().expect("Nie prawidłowa wartość macierzy"))
                 .collect();
-            matrix.push(values); // Assign the read values to the matrix row
+            matrix.push(values); // Dodajemy wartości do rzędu macierzy
         }
     }
 
-    //println!("{:?}", matrix);
-    return matrix // Return the matrix
+    matrix // Zwracamy macierz
 }
+
+//funkcje ustawiające parametry
 
 unsafe fn set_stop_time(config: &mut Config) {
     println!("Set stop time: ");
@@ -59,8 +60,8 @@ unsafe fn set_stop_time(config: &mut Config) {
         .read_line(&mut input)
         .expect("Failed to read line!");
 
-    // Parse the input string to an i32
-    let temp = input.trim().parse::<u64>().expect("Please enter a valid integer");
+
+    let temp = input.trim().parse::<u64>().expect("Nie prawidłowa wartość podana");
     config.stop_time = temp;
 }
 
@@ -71,8 +72,8 @@ unsafe fn set_starting_population_size(config: &mut Config) {
         .read_line(&mut input)
         .expect("Failed to read line!");
 
-    // Parse the input string to an i32
-    let temp = input.trim().parse::<i32>().expect("Please enter a valid integer");
+
+    let temp = input.trim().parse::<i32>().expect("Nie prawidłowa wartość podana");
     config.starting_population_size = temp;
 }
 
@@ -83,8 +84,7 @@ unsafe fn set_mutation_rate(config: &mut Config) {
         .read_line(&mut input)
         .expect("Failed to read line!");
 
-    // Parse the input string to an i32
-    let temp = input.trim().parse::<f32>().expect("Please enter a valid integer");
+    let temp = input.trim().parse::<f32>().expect("Nie prawidłowa wartość podana");
     config.mutation_rate = temp;
 }
 
@@ -93,16 +93,17 @@ unsafe fn set_mutation_rate(config: &mut Config) {
 fn main() {
     let mut option:i32;
     let mut config = Config::new();
-
+    // menu
     println!("Author: Szymon Borzdyński");
     println!("Options:  [] <- current param value");
-    println!("0 - read matrix");
-    println!("1 - set stop criteria");
-    println!("2 - set starting population size");
-    println!("3 - set mutation rate");
-    println!("4 - set mutation method");
-    println!("5 - start genetic algorithm");
-    println!("6 - test");
+    println!("0 - wczytaj macierz ");
+    println!("1 - ustaw krytterium stopu - czas");
+    println!("2 - ustaw rozmiar populacji startowej");
+    println!("3 - ustaw współczynnik krzyżowania");
+    println!("4 - ustaw współczynnik mutacji");
+    println!("5 - ustaw metodę mutacji ");
+    println!("6 - start algorytmu genetycznego");
+    println!("7 - test");
     io::stdout().flush().unwrap();
     loop {
         option = helpers::read_integer();
@@ -110,31 +111,26 @@ fn main() {
             match option {
                 0 => {
                     config.matrix = read_matrix(&mut config);
-                    println!("{:?}", config.matrix);
                 }
                 1 => {
                     set_stop_time(&mut config);
-                    println!("{:?}", config.stop_time);
+                    println!("Czas: {:?}", config.stop_time);
                 }
                 2 => {
                     set_starting_population_size(&mut config);
-                    println!("{:?}", config.starting_population_size);
-                }
-                3 => {
-                    set_mutation_rate(&mut config);
-                    println!("{:?}", config.mutation_rate);
+                    println!("Rozmiar populacji: {:?}", config.starting_population_size);
                 }
                 4 => {
-                    //todo add code 4
+                    set_mutation_rate(&mut config);
+                    println!("Częstopliwość mutacji: {:?}", config.mutation_rate);
                 }
                 5 => {
-                    genetic::genetic(&mut config);
+                   // todo zdecydować czy dodać alternaytwną funkcję ruletki
                 }
                 6 => {
-                    println!("Test only");
-                    test6();
+                    genetic::genetic(&mut config); // uruchomienie algorytmu genetycznego
                 }
-                _ => println!("Unknown option!"),
+                _ => println!("Nieznana opcja!"),
             }
         }
     }

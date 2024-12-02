@@ -4,9 +4,9 @@ use crate::conf::Config;
 
 use rand_mt::Mt19937GenRand32;
 use rand::distributions::{Distribution, Uniform};
-use crate::osobnik::Solution;
+use crate::solution::Solution;
 
-
+// funkcja losująca zakres do inwersji i ją wykonująca
 pub fn invert(solution: &mut Solution, rng: &mut Mt19937GenRand32) {
     let range = Uniform::from(0..=(solution.cities.len() - 1) as i32);
 
@@ -25,13 +25,13 @@ pub fn invert(solution: &mut Solution, rng: &mut Mt19937GenRand32) {
     //range_to_invert.rev();
 }
 
+//metoda mutacji poprzez inwersję wraz z prawdopodobieństwem
 fn invertion_method(config: &mut Config) {
     let population_size = config.population.len();
-    let mutation_count: i32 = (config.mutation_rate * population_size as f32) as i32; //todo is it safe ?
+    let mutation_count: i32 = (config.mutation_rate * population_size as f32) as i32;
 
 
-    // todo zoptymalziowac aby range nyl init tylko raz
-    let range = Uniform::from(0 as i32..=((population_size - 1) as i32)); // todo czeck czy = zostawić w c++ mozę inaczej od właćżnie do bez
+    let range = Uniform::from(0 as i32..=((population_size - 1) as i32));
     let rng = &mut config.rng;
     for _ in 0..mutation_count {
         let mut random = range.sample(rng);
@@ -39,6 +39,7 @@ fn invertion_method(config: &mut Config) {
     }
 }
 
+//metoda mutacji poprzez swap
 fn swapping_method(config: &mut Config) {
     let population = &mut config.population;
     let range = Uniform::from(0..=((population.len() - 1) as i32));
@@ -49,6 +50,7 @@ fn swapping_method(config: &mut Config) {
     population.swap(punkt1 as usize, punkt2 as usize);
 }
 
+//funkcja wyboru metody mutacji
 pub(crate) fn mutation(mut config: &mut Config) {
     if (config.mutation_method == 0) {
         invertion_method(&mut config);

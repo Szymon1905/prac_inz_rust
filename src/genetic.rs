@@ -4,23 +4,25 @@ use rand::Rng;
 use std::time::{Instant, Duration};
 use rand::seq::SliceRandom;
 use crate::conf::Config;
-use crate::osobnik::Solution;
+use crate::solution::Solution;
 use crate::mutations::mutation;
 use rand_mt::Mt19937GenRand32;
+
+
 fn print_best(config: Config){
     println!("best solution {:?}", config.best_solution.cities);
 }
 
 fn timer(){
-// todo add timer
+// todo add timer ?
 }
 
 pub fn shuffle(vec: &mut Vec<i32>, rng: &mut Mt19937GenRand32) {
     let len = vec.len();
     for i in (1..len).rev() {
-        let range = Uniform::from(0..=i as i32);  // Ensure `i` is casted correctly to `i32`
+        let range = Uniform::from(0..=i as i32);
         let j = range.sample(rng);
-        vec.swap(i, j as usize);  // `j` is cast back to `usize` to match the index type
+        vec.swap(i, j as usize);
     }
 }
 
@@ -33,12 +35,12 @@ fn generate_starting_population(config: &mut Config){
         cities.push(i);
     }
 
-    // clear population on restart
+    // zerujemy populację po restarcie
     config.population.clear();
 
     let rng = &mut config.rng;
     let starting_population_size = config.starting_population_size;
-    // generating random permutations of cities by the shuffle method and inserting them into the starting population
+    // generujemy losowe permutacje miast do szuflowania i wstawiamy do populacji startowej
     for i in (0..starting_population_size) {
         //cities.shuffle(rng); // todo check if same as in c++
         shuffle(&mut cities, rng);
@@ -48,7 +50,6 @@ fn generate_starting_population(config: &mut Config){
 
     for mut solution in config.population.iter_mut(){
         let sol = solution;
-        println!("{:?}", sol.cities);
         let mat = config.matrix.clone();
         sol.path_length = calculate_path_length(sol, mat);  //todo test this in memory
     }
@@ -58,30 +59,26 @@ pub(crate) fn calculate_path_length(solution: &mut Solution, matrix: Vec<Vec<i32
     let mut sum_path: i32 = 0;
     let cities_count = solution.cities.len() - 1;
 
-    if cities_count > 10 {
-        println!("cities count is {}", cities_count);
-        println!("{:?}", solution);
-    }
 
     for i in (0..cities_count){
         sum_path = sum_path + matrix[solution.cities[i] as usize][solution.cities[i + 1] as usize];
     }
-    // go back to first city
+    // wracamy do pierwszego miasta
     sum_path += matrix[solution.cities[cities_count] as usize][solution.cities[0] as usize];
     return sum_path;
 }
 
 fn evaluate_population(population: &mut Vec<Solution>, global_matrix: &Vec<Vec<i32>>, best_solution: &mut Solution) {
     for solution in population.iter_mut() {
-        // Calculation of path length
+        // obliczenie całkowitej drogi
         solution.path_length = calculate_path_length(solution, global_matrix.clone());
 
-        // Compare with the current best solution
+        // porównanie z obecnie najlepszym rozwiązaniem
         if solution.path_length < best_solution.path_length {
-            // Update the best solution for survivability of the best
-            *best_solution = solution.clone(); // Assuming Solution implements Clone
+            // Aktualizacja najlepszego rozwiązania dla przeżywalności najlepszego osobnika
+            *best_solution = solution.clone();
 
-            // Print the new best solution's path length
+            // Wypisanie nowego najlepszego
             println!("New best: {}", solution.path_length);
         }
     }
@@ -92,20 +89,19 @@ fn custom_parent_choosing_method(){
 }
 
 fn choosing_parent_book_method(population: &[Solution], rng : &mut Mt19937GenRand32) -> Vec<Solution> {
-    // Calculate the sum of the inverse path lengths
+    // Obliczenie sumy odwrotności
     let path_sum: f32 = population
         .iter()
         .map(|solution| 1.0f32 / solution.path_length as f32)
         .sum();
 
-    // Initialize an empty list for selected parents
+    // Inicjalizacja pustego vectora na wybrane osobniki
     let mut chosen_ones: Vec<Solution> = Vec::new();
 
-    // Define a uniform distribution over the range [0, path_sum]
+
     let distribution = Uniform::new(0.0, path_sum);
 
-    //let rng = &mut config.rng;
-    // Choosing parents
+    // Wybieranie rodziców
     for _ in 0..(population.len() / 2) {
         let mut sum = 0.0f32;
         let los = distribution.sample(rng);
@@ -173,7 +169,6 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
     for i in 0..=point2 {
         let city = parent2.cities[i as usize];
 
-        // Check if the city is not in successor.cities and not in available_cities
         if !succesor.cities.contains(&city) {
             if !available_cities.contains(&city) {
                 // jeśli miasta nie ma w cześci zielonej (slajd 17), dodajemy miasto do dostepnych miast
@@ -185,7 +180,6 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
     // Wypełnienie potomka miastami z rodzica 2 częsci prawej
     for i in (point2 + 1) as usize..city_count {
         if succesor.cities[i] == -1 {
-            // Assign the first city from available_cities to successor.cities[i] and remove it
             succesor.cities[i] = available_cities[0];
             available_cities.remove(0);
         }
@@ -194,7 +188,6 @@ fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRan
     // Wypełnienie potomka miastami z rodzica 2 częsci lewej
     for i in 0..point1 {
         if succesor.cities[i as usize] == -1 {
-            // Assign the first city from available_cities to successor.cities[i] and remove it
             succesor.cities[i as usize] = available_cities[0];
             available_cities.remove(0);
         }
@@ -256,7 +249,7 @@ fn crossover(mut config: &mut Config){
 }
 
 pub(crate) fn genetic(config: &mut Config){
-    config.liczba_operacji = 0;
+    config.operation_count = 0;
     generate_starting_population(config);
 
     config.best_solution.reset();
@@ -266,6 +259,14 @@ pub(crate) fn genetic(config: &mut Config){
     let start = Instant::now();
     let end = start + duration;
 
+    {
+        let population = &mut config.population;
+        let best_solution = &mut config.best_solution;
+        let matrix = &mut config.matrix;
+        let rng = &mut config.rng;
+
+        evaluate_population(population, matrix, best_solution);
+    }
 
     while Instant::now() < end {
         {
@@ -296,13 +297,18 @@ pub(crate) fn genetic(config: &mut Config){
 
         mutation(config);
 
-        config.liczba_operacji += 1;
+        config.operation_count += 1;
     }
 
 
 
 
-    println!("Out of time");
-    println!("Liczba operacji: {}", config.liczba_operacji);
+    println!("Koniec czasu !");
+    println!("Liczba operacji: {}", config.operation_count);
     config.print_best();
+}
+
+
+pub(crate) fn genetic_with_operation_counter(config: &mut Config){
+    //todo dodać wersję do testów na liczbę operacji w czasie
 }

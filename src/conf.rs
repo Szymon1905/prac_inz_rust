@@ -1,7 +1,7 @@
 // Konfiguracja
 
 use rand_mt::Mt19937GenRand32;
-use crate::osobnik::Solution;
+use crate::solution::Solution;
 
 
 
@@ -19,32 +19,33 @@ pub struct Config {
     pub population: Vec<Solution>,
     pub best_solution: Solution,
     pub rng :Mt19937GenRand32,
-    pub liczba_operacji:i32,
+    pub operation_count:i32,
 }
 impl Config {
     pub fn new() -> Self {
 
-        //ziarno
+        //ziarno dla generatora liczb losowych
         let seed = 12345;
 
         Config {
-            city_count: 0,
-            matrix: Vec::new(),
-            stop_time: 10,
-            starting_population_size: 500,
-            mutation_rate: 0.01,
-            crossover_factor: 0.8,
-            mutation_method: 0,
-            roulette_ver: 0,
+            city_count: 0, // liczba miast dla danej instacji TSP
+            matrix: Vec::new(), //macierz sąsiedztwa
+            stop_time: 10, // warunek stopu czasowy
+            starting_population_size: 500, // wielkosć popualcji startowej
+            mutation_rate: 0.01, //współcznnik mutacji
+            crossover_factor: 0.8, //współcznnik krzyżowania
+            mutation_method: 0, //metoda mutacji
+            roulette_ver: 0, // wersja ruletki, opcjonalnie dodam drugą z c++
             name_of_matrix: String::new(),
-            seed,
-            population: Vec::new(),
-            best_solution: Solution::new(Vec::new(),i32::MAX),
-            rng: Mt19937GenRand32::new(seed),
-            liczba_operacji: 0,
+            seed, // ziarno
+            population: Vec::new(), // vectora na populację
+            best_solution: Solution::new(Vec::new(),i32::MAX), // aktualnie najlpesze rozwiązaie, poźniej zwracane
+            rng: Mt19937GenRand32::new(seed), // generator liczb losowych
+            operation_count: 0, // meirnik liczby operacji do testów wydajności
         }
     }
 
+    // funkcja wypisująca najlepsze rozwiązanie
     pub fn print_best(&self) {
         println!("Best solution: ");
         println!("{:?}", self.best_solution);
