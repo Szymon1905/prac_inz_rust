@@ -1,4 +1,4 @@
-// Konfiguracja
+// Konfiguracja programu
 
 use rand_mt::Mt19937GenRand32;
 use crate::solution::Solution;
@@ -11,7 +11,7 @@ pub struct Config {
     pub stop_time: u64,
     pub starting_population_size: i32,
     pub mutation_rate: f32,
-    pub crossover_factor: f32,
+    pub crossover_rate: f32,
     pub mutation_method: i32,
     pub roulette_ver: i32,
     pub name_of_matrix: String,
@@ -25,15 +25,15 @@ impl Config {
     pub fn new() -> Self {
 
         //ziarno dla generatora liczb losowych
-        let seed = 12345;
+        let seed = 234;
 
         Config {
-            city_count: 0, // liczba miast dla danej instacji TSP
+            city_count: 0, // liczba miast dla danej instancji TSP
             matrix: Vec::new(), //macierz sąsiedztwa
             stop_time: 10, // warunek stopu czasowy
             starting_population_size: 500, // wielkosć popualcji startowej
             mutation_rate: 0.01, //współcznnik mutacji
-            crossover_factor: 0.8, //współcznnik krzyżowania
+            crossover_rate: 0.8, //współcznnik krzyżowania
             mutation_method: 0, //metoda mutacji
             roulette_ver: 0, // wersja ruletki, opcjonalnie dodam drugą z c++
             name_of_matrix: String::new(),
@@ -46,10 +46,12 @@ impl Config {
     }
 
     // funkcja wypisująca najlepsze rozwiązanie
-    pub fn print_best(&self) {
-        println!("Best solution: ");
+    pub fn print_best(&mut self) {
+        println!("Najlepsze rozwiązanie: ");
+        let city = self.best_solution.cities[0].clone();
+        self.best_solution.cities.push(city);
         println!("{:?}", self.best_solution);
-        println!("Solution length: {}", self.best_solution.path_length);
+        println!("Koszt rozwiązania: {}", self.best_solution.path_length);
     }
 }
 

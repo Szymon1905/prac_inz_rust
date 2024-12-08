@@ -1,7 +1,4 @@
-
-
 use crate::conf::Config;
-
 use rand_mt::Mt19937GenRand32;
 use rand::distributions::{Distribution, Uniform};
 use crate::solution::Solution;
@@ -59,5 +56,3 @@ pub(crate) fn mutation(mut config: &mut Config) {
         swapping_method(&mut config);
     }
 }
-
-//todo test all these functions

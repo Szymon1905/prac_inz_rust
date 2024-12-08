@@ -1,5 +1,3 @@
-use std::f32::INFINITY;
-
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -8,7 +6,7 @@ pub struct Solution {
     pub(crate) path_length: i32,
 }
 
-//struktura danych Solution i jej metody reprezentującr pojedyńcze rozwiązanie
+//struktura danych Solution i jej metody reprezentująca pojedyńcze rozwiązanie
 impl Solution {
     pub fn new(cities: Vec<i32>, path_length: i32) -> Self {
         Solution { cities, path_length }

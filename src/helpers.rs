@@ -24,7 +24,7 @@ pub fn read_integer() -> i32 {
 
         match io::stdin().read_line(&mut input) {
             Ok(_) => {
-                println!("You entered: {}", input.trim());
+                println!("Wczytano: {}", input.trim());
             }
             Err(e) => {
                 println!("Bład wczytanego wyboru: {}", e);
