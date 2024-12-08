@@ -7,10 +7,7 @@ use crate::solution::Solution;
 use crate::mutations::mutation;
 use rand_mt::Mt19937GenRand32;
 
-//Metoda wypisująca najlepsze znalezione rozwiązanie
-fn print_best(mut config: Config){
-    println!("Najlepsze rozwiązanie {:?}", config.best_solution.cities);
-}
+
 
 
 //Metoda implementująca tasowanie fisher yates
@@ -114,15 +111,7 @@ fn choosing_parent_book_method(population: &[Solution], rng : &mut Mt19937GenRan
     chosen_ones //zwracamy wybranych
 }
 
-// funkcja sprawdzająca czy dane miasto jest w vectorze
-fn check_if_contains(vector: &[i32], liczba: i32) -> bool {
-    for &pole in vector {
-        if pole == liczba {
-            return true;
-        }
-    }
-    return false;
-}
+
 
 // Metoda implementująca krzyżównaie OX 2 rodziców w celu stworzenia potomka
 fn ox_crossover(parent1: &Solution, parent2 : &Solution, rng: &mut Mt19937GenRand32) -> Solution {

@@ -5,16 +5,6 @@ use rand::distributions::{Distribution, Uniform};
 
 // funkcje pomocnicze dla programu
 
-// funkcja zwracająca obecną scieżkę
-fn get_cwd() -> String {
-    env::current_dir().unwrap().to_str().unwrap().to_owned()
-}
-
-// funkcja wypisująca obecną scieżkę
-fn print_cwd() {
-    println!("{:?}", env::current_dir());
-}
-
 // funkcja zczytujaca int do obsługi menu
 pub fn read_integer() -> i32 {
     loop {

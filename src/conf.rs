@@ -13,7 +13,6 @@ pub struct Config {
     pub mutation_rate: f32,
     pub crossover_rate: f32,
     pub mutation_method: i32,
-    pub roulette_ver: i32,
     pub name_of_matrix: String,
     pub seed: u32,
     pub population: Vec<Solution>,
@@ -35,7 +34,6 @@ impl Config {
             mutation_rate: 0.01, //współcznnik mutacji
             crossover_rate: 0.8, //współcznnik krzyżowania
             mutation_method: 0, //metoda mutacji
-            roulette_ver: 0, // wersja ruletki, opcjonalnie dodam drugą z c++
             name_of_matrix: String::new(),
             seed, // ziarno
             population: Vec::new(), // vectora na populację
